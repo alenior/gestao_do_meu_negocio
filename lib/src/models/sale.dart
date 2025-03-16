@@ -5,7 +5,7 @@ class Sale {
   final DateTime date;
   final double total;
   final String status;
-  final String paymentMethod;
+  final List<PaymentMethod> paymentMethods;
   final String notes;
   final List<SaleItem> items;
 
@@ -16,7 +16,7 @@ class Sale {
     required this.date,
     required this.total,
     required this.status,
-    required this.paymentMethod,
+    required this.paymentMethods,
     required this.notes,
     required this.items,
   });
@@ -28,7 +28,6 @@ class Sale {
       'date': date.toIso8601String(),
       'total': total,
       'status': status,
-      'paymentMethod': paymentMethod,
       'notes': notes,
     };
   }
@@ -41,7 +40,9 @@ class Sale {
       date: DateTime.parse(map['date']),
       total: map['total'],
       status: map['status'],
-      paymentMethod: map['paymentMethod'],
+      paymentMethods: (map['paymentMethods'] as List<dynamic>)
+          .map((method) => PaymentMethod.fromMap(method))
+          .toList(),
       notes: map['notes'],
       items: (map['items'] as List<dynamic>)
           .map((item) => SaleItem.fromMap(item))
@@ -52,7 +53,7 @@ class Sale {
 
 class SaleItem {
   final int? id;
-  int saleId;
+  final int saleId;
   final int productId;
   final String productName;
   final int quantity;
@@ -76,6 +77,7 @@ class SaleItem {
       'id': id,
       'saleId': saleId,
       'productId': productId,
+      'productName': productName,
       'quantity': quantity,
       'price': price,
       'discount': discount,
@@ -93,6 +95,42 @@ class SaleItem {
       price: map['price'],
       discount: map['discount'],
       total: map['total'],
+    );
+  }
+}
+
+class PaymentMethod {
+  final int? id;
+  final int saleId;
+  final String type;
+  final double amount;
+  final int? installments;
+
+  PaymentMethod({
+    this.id,
+    required this.saleId,
+    required this.type,
+    required this.amount,
+    this.installments,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'saleId': saleId,
+      'type': type,
+      'amount': amount,
+      'installments': installments,
+    };
+  }
+
+  factory PaymentMethod.fromMap(Map<String, dynamic> map) {
+    return PaymentMethod(
+      id: map['id'],
+      saleId: map['saleId'],
+      type: map['type'],
+      amount: map['amount'],
+      installments: map['installments'],
     );
   }
 }

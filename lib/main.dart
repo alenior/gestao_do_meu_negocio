@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'src/screens/home_screen.dart';
+import 'src/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,20 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Gestão do Meu Negócio',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.light,
-        ),
+        primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(),
+      home: const LoginScreen(), // Definindo a tela de login como inicial
     );
   }
 }

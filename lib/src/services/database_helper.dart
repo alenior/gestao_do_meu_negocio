@@ -335,8 +335,19 @@ Future<Company?> getCompany() async {
     final saleId = await db.insert('sales', sale.toMap());
 
     for (var item in sale.items) {
-      item.saleId = saleId;
-      await db.insert('sale_items', item.toMap());
+      // Create a new SaleItem with the correct saleId
+      final newItem = SaleItem(
+        id: item.id,
+        saleId: saleId,
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        price: item.price,
+        discount: item.discount,
+        total: item.total,
+      );
+      
+      await db.insert('sale_items', newItem.toMap());
 
       final product = await db.query(
         'products',
