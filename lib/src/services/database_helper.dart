@@ -10,6 +10,7 @@ import '../models/company.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+  static const _databaseVersion = 2; // Aumente a versão do banco
 
   factory DatabaseHelper() => _instance;
 
@@ -23,7 +24,12 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'business_manager.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -46,7 +52,8 @@ class DatabaseHelper {
         address TEXT NOT NULL,
         phone TEXT NOT NULL,
         email TEXT NOT NULL,
-        imagePath TEXT
+        imagePath TEXT,
+        birthday INTEGER
       )
     ''');
 
@@ -129,30 +136,31 @@ class DatabaseHelper {
   }
 
   Future<int> insertCompany(Company company) async {
-  final db = await database;
-  return await db.insert('company', company.toMap());
-}
-
-Future<int> updateCompany(Company company) async {
-  final db = await database;
-  return await db.update(
-    'company',
-    company.toMap(),
-    where: 'id = ?',
-    whereArgs: [company.id],
-  );
-}
-
-Future<Company?> getCompany() async {
-  final db = await database;
-  final List<Map<String, dynamic>> maps = await db.query('company');
-  
-  if (maps.isEmpty) {
-    return null;
+    final db = await database;
+    return await db.insert('company', company.toMap());
   }
-  
-  return Company.fromMap(maps.first);
-}
+
+  Future<int> updateCompany(Company company) async {
+    final db = await database;
+    return await db.update(
+      'company',
+      company.toMap(),
+      where: 'id = ?',
+      whereArgs: [company.id],
+    );
+  }
+
+  Future<Company?> getCompany() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('company');
+
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return Company.fromMap(maps.first);
+  }
+
   // Customer operations
   Future<int> insertCustomer(Customer customer) async {
     final db = await database;
@@ -346,7 +354,7 @@ Future<Company?> getCompany() async {
         discount: item.discount,
         total: item.total,
       );
-      
+
       await db.insert('sale_items', newItem.toMap());
 
       final product = await db.query(
@@ -547,5 +555,12 @@ Future<Company?> getCompany() async {
     }
 
     return sales;
+  }
+
+  
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE customers ADD COLUMN birthday INTEGER');
+    }
   }
 }

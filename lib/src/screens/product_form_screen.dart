@@ -47,9 +47,15 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   void _calculatePrices() {
-    final purchasePrice = double.tryParse(_purchasePriceController.text.replaceAll(',', '.')) ?? 0;
-    final additionalCostsTotal = _additionalCosts.fold(0.0, (sum, cost) => sum + cost.value);
-    final profitMargin = double.tryParse(_profitMarginController.text.replaceAll(',', '.')) ?? 0;
+    final purchasePrice =
+        double.tryParse(_purchasePriceController.text.replaceAll(',', '.')) ??
+        0;
+    final additionalCostsTotal = _additionalCosts.fold(
+      0.0,
+      (sum, cost) => sum + cost.value,
+    );
+    final profitMargin =
+        double.tryParse(_profitMarginController.text.replaceAll(',', '.')) ?? 0;
 
     setState(() {
       _totalCost = purchasePrice + additionalCostsTotal;
@@ -82,16 +88,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome do Custo',
-                ),
+                decoration: const InputDecoration(labelText: 'Nome do Custo'),
               ),
               TextField(
                 controller: valueController,
-                decoration: const InputDecoration(
-                  labelText: 'Valor',
+                decoration: const InputDecoration(labelText: 'Valor'),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
               ),
             ],
           ),
@@ -103,8 +107,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             TextButton(
               onPressed: () {
                 final name = nameController.text;
-                final value = double.tryParse(
-                    valueController.text.replaceAll(',', '.')) ?? 0;
+                final value =
+                    double.tryParse(
+                      valueController.text.replaceAll(',', '.'),
+                    ) ??
+                    0;
 
                 if (name.isNotEmpty && value > 0) {
                   setState(() {
@@ -132,9 +139,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.product == null ? 'Novo Produto' : 'Editar Produto',
-        ),
+        title: Text(widget.product == null ? 'Novo Produto' : 'Editar Produto'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -148,9 +153,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   radius: 60,
                   backgroundImage:
                       _imagePath != null ? FileImage(File(_imagePath!)) : null,
-                  child: _imagePath == null
-                      ? const Icon(Icons.camera_alt, size: 40)
-                      : null,
+                  child:
+                      _imagePath == null
+                          ? const Icon(Icons.camera_alt, size: 40)
+                          : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -204,7 +210,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                   border: OutlineInputBorder(),
                   prefixText: 'R\$ ',
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 onChanged: (_) => _calculatePrices(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -277,8 +285,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                           border: OutlineInputBorder(),
                           suffixText: '%',
                         ),
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         onChanged: (_) => _calculatePrices(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -293,6 +302,15 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Lucro: ${_currencyFormat.format(_sellingPrice - _totalCost)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
                         ),
                       ),
                     ],
@@ -326,12 +344,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                         labelText: 'Fornecedor',
                         border: OutlineInputBorder(),
                       ),
-                      items: suppliers.map((supplier) {
-                        return DropdownMenuItem(
-                          value: supplier.id,
-                          child: Text(supplier.name),
-                        );
-                      }).toList(),
+                      items:
+                          suppliers.map((supplier) {
+                            return DropdownMenuItem(
+                              value: supplier.id,
+                              child: Text(supplier.name),
+                            );
+                          }).toList(),
                       onChanged: (value) {
                         setState(() {
                           _selectedSupplierId = value as int;
@@ -360,42 +379,46 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
-  Future<void> _saveProduct() async {
+    Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {
-      final product = Product(
-        id: widget.product?.id,
-        code: _codeController.text,
-        name: _nameController.text,
-        description: _descriptionController.text,
-        purchasePrice: double.parse(_purchasePriceController.text.replaceAll(',', '.')),
-        additionalCosts: _additionalCosts,
-        profitMargin: double.parse(_profitMarginController.text.replaceAll(',', '.')),
-        quantity: int.parse(_quantityController.text),
-        supplierId: _selectedSupplierId!,
-        imagePath: _imagePath,
-      );
+      try {
+        final product = Product(
+          id: widget.product?.id,
+          code: _codeController.text,
+          name: _nameController.text,
+          description: _descriptionController.text,
+          purchasePrice: double.parse(_purchasePriceController.text.replaceAll(',', '.')),
+          additionalCosts: _additionalCosts,
+          profitMargin: double.parse(_profitMarginController.text.replaceAll(',', '.')),
+          quantity: int.parse(_quantityController.text),
+          supplierId: _selectedSupplierId!,
+          imagePath: _imagePath,
+        );
 
-      final db = DatabaseHelper();
-      if (widget.product == null) {
-        await db.insertProduct(product);
-      } else {
-        await db.updateProduct(product);
-      }
+        final db = DatabaseHelper();
+        if (widget.product == null) {
+          await db.insertProduct(product);
+        } else {
+          await db.updateProduct(product);
+        }
 
-      if (mounted) {
-        Navigator.pop(context, true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Produto salvo com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar o produto: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _codeController.dispose();
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _purchasePriceController.dispose();
-    _profitMarginController.dispose();
-    _quantityController.dispose();
-    super.dispose();
   }
 }

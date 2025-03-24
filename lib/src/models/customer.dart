@@ -1,31 +1,34 @@
 class Customer {
   final int? id;
   final String name;
-  final String taxId;
+  final String? taxId;  // CPF/CNPJ (opcional)
   final String address;
   final String phone;
-  final String email;
+  final String? email;  // opcional
   final String? imagePath;
+  final DateTime? birthday;  // novo campo
 
   Customer({
     this.id,
     required this.name,
-    required this.taxId,
+    this.taxId,
     required this.address,
     required this.phone,
-    required this.email,
+    this.email,
     this.imagePath,
+    this.birthday,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'taxId': taxId,
+      'tax_id': taxId,
       'address': address,
       'phone': phone,
       'email': email,
-      'imagePath': imagePath,
+      'image_path': imagePath,
+      'birthday': birthday?.millisecondsSinceEpoch,
     };
   }
 
@@ -33,11 +36,14 @@ class Customer {
     return Customer(
       id: map['id'],
       name: map['name'],
-      taxId: map['taxId'],
+      taxId: map['tax_id'],
       address: map['address'],
       phone: map['phone'],
       email: map['email'],
-      imagePath: map['imagePath'],
+      imagePath: map['image_path'],
+      birthday: map['birthday'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(map['birthday'])
+          : null,
     );
   }
 }
