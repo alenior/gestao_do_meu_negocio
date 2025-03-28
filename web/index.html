@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,12 +28,19 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>gestao_do_meu_negocio</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+    var sqlite3InitModule;
+  </script>
+  <script src="sqlite3/sqlite3.wasm" type="application/wasm"></script>
+  <script src="sqlite3/sqflite_sw.js"></script>
 </head>
+
 <body>
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>

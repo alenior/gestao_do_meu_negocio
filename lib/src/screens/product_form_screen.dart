@@ -379,46 +379,34 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
-    Future<void> _saveProduct() async {
+  Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        final product = Product(
-          id: widget.product?.id,
-          code: _codeController.text,
-          name: _nameController.text,
-          description: _descriptionController.text,
-          purchasePrice: double.parse(_purchasePriceController.text.replaceAll(',', '.')),
-          additionalCosts: _additionalCosts,
-          profitMargin: double.parse(_profitMarginController.text.replaceAll(',', '.')),
-          quantity: int.parse(_quantityController.text),
-          supplierId: _selectedSupplierId!,
-          imagePath: _imagePath,
-        );
+      final product = Product(
+        id: widget.product?.id,
+        code: _codeController.text,
+        name: _nameController.text,
+        description: _descriptionController.text,
+        purchasePrice: double.parse(
+          _purchasePriceController.text.replaceAll(',', '.'),
+        ),
+        additionalCosts: _additionalCosts,
+        profitMargin: double.parse(
+          _profitMarginController.text.replaceAll(',', '.'),
+        ),
+        quantity: int.parse(_quantityController.text),
+        supplierId: _selectedSupplierId!,
+        imagePath: _imagePath,
+      );
 
-        final db = DatabaseHelper();
-        if (widget.product == null) {
-          await db.insertProduct(product);
-        } else {
-          await db.updateProduct(product);
-        }
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Produto salvo com sucesso!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pop(context, true);
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao salvar o produto: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      final db = DatabaseHelper();
+      if (widget.product == null) {
+        await db.insertProduct(product);
+      } else {
+        await db.updateProduct(product);
       }
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
     }
   }
 }
